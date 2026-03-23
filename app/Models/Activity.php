@@ -14,6 +14,8 @@ class Activity extends Model
         'description',
         'date',
         'location',
-        'image'
+        'image',
+        'status',
+        'user_id'
     ];
 }

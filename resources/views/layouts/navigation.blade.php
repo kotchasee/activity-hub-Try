@@ -15,6 +15,19 @@
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                         {{ __('Dashboard') }}
                     </x-nav-link>
+                    <x-nav-link :href="route('My-activities')" :active="request()->routeIs('My-activities')">
+                        {{ __('My-activities') }}
+                    </x-nav-link>
+                        @if(auth()->user()->role === 'admin')
+                            <x-nav-link :href="url('/admin/activities')">
+                                Admin Panel
+                            </x-nav-link>
+                        @endif
+                        @if(auth()->user()->role === 'staff')
+                            <x-nav-link :href="url('/create-activity')">
+                                Create activity
+                            </x-nav-link>
+                        @endif
                 </div>
             </div>
 

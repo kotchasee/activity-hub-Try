@@ -1,15 +1,31 @@
-<h1>My Activities</h1>
+<x-app-layout>
 
-@foreach($registrations as $reg)
+    <x-slot name="header">
+        <h2>My Activities</h2>
+    </x-slot>
 
-<div>
+    <div style="padding:20px;">
 
-Activity ID : {{ $reg->activity_id }}
+        @foreach($registrations as $reg)
 
-<br>
+        <div style="border:1px solid black; margin:10px; padding:10px;">
 
-Status : {{ $reg->status }}
+            <h3>{{ $reg->activity->title }}</h3>
 
-</div>
+            <p>Date: {{ $reg->activity->date }}</p>
 
-@endforeach
+            <p>Location: {{ $reg->activity->location }}</p>
+
+            <p>Status: {{ $reg->status }}</p>
+
+            <a href="/activities/{{ $reg->activity->id }}">
+                <button>View Detail</button>
+            </a>
+
+        </div>
+
+        @endforeach
+
+    </div>
+
+</x-app-layout>

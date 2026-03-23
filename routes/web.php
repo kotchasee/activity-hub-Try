@@ -5,51 +5,76 @@ use App\Http\Controllers\ActivityController;
 use App\Http\Controllers\RegistrationController;
 use Illuminate\Support\Facades\Route;
 
+/*
+|--------------------------------------------------------------------------
+| Home
+|--------------------------------------------------------------------------
+*/
+
 Route::get('/', function () {
     return view('welcome');
 });
 
 /*
-|---------------------------------------
-| Dashboard
-|---------------------------------------
+|--------------------------------------------------------------------------
+| Dashboard (หน้า Home หลัก)
+|--------------------------------------------------------------------------
 */
 
 Route::get('/dashboard', [ActivityController::class, 'index'])
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
 
-
 /*
-|---------------------------------------
-| Activity
-|---------------------------------------
+|--------------------------------------------------------------------------
+| Activity + Registration
+|--------------------------------------------------------------------------
 */
 
 Route::middleware('auth')->group(function () {
 
+    // แสดงกิจกรรมทั้งหมด
     Route::get('/activities', [ActivityController::class, 'index'])->name('activities');
 
-    Route::get('/activities/{id}', [ActivityController::class, 'show']);
+    // ดูรายละเอียดกิจกรรม
+    Route::get('/activities/{id}', [ActivityController::class, 'show'])->name('activities.show');
 
+    // สร้างกิจกรรม
     Route::get('/create-activity', [ActivityController::class, 'create'])->name('activities.create');
-
     Route::post('/create-activity', [ActivityController::class, 'store'])->name('activities.store');
 
-    // สมัครกิจกรรม
-    Route::post('/activities/{id}/register', [RegistrationController::class,'register']);
-   
-    Route::get('/my-activities', [RegistrationController::class,'myActivities']);
+    // สมัครกิจกรรม (ใช้ตัวนี้ตัวเดียว)
+    Route::post('/activities/{id}/register', [RegistrationController::class,'register'])->name('activities.register');
 
-    Route::post('/register-activity', [RegistrationController::class,'store'])->name('register.activity');
-
+    // หน้า My Activities
+    Route::get('/my-activities', [RegistrationController::class,'myActivities'])->name('My-activities');
+    // My club
+    Route::get('/my-created-activities', [ActivityController::class, 'myActivities']);
 });
 
+/*
+|--------------------------------------------------------------------------
+| Admin Management 
+|--------------------------------------------------------------------------
+*/
+
+Route::middleware('auth')->group(function () {
+    // จัดการการสมัคร (Registrations)
+    Route::get('/admin/registrations', [RegistrationController::class, 'adminIndex']);
+    Route::post('/admin/registrations/{id}/approve', [RegistrationController::class, 'approve']);
+    Route::post('/admin/registrations/{id}/reject', [RegistrationController::class, 'reject']);
+
+    // จัดการกิจกรรม (Activities) 
+    Route::get('/admin/activities', [ActivityController::class, 'adminIndex']);
+    Route::post('/admin/activities/{id}/approve', [ActivityController::class, 'approve']);
+    Route::post('/admin/activities/{id}/reject', [ActivityController::class, 'reject']);
+    Route::delete('/admin/activities/{id}', [ActivityController::class, 'destroy'])->name('activities.destroy');
+});
 
 /*
-|---------------------------------------
+|--------------------------------------------------------------------------
 | Profile
-|---------------------------------------
+|--------------------------------------------------------------------------
 */
 
 Route::middleware('auth')->group(function () {
@@ -61,5 +86,11 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
 });
+
+/*
+|--------------------------------------------------------------------------
+| Auth (Laravel Breeze)
+|--------------------------------------------------------------------------
+*/
 
 require __DIR__.'/auth.php';
