@@ -1,66 +1,59 @@
 <x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            All Activities
-        </h2>
-    </x-slot>
 
-    <div class="py-12">
+<x-slot name="header">
+<h2 class="font-semibold text-2xl text-gray-800 dark:text-gray-200">
+All Activities
+</h2>
+</x-slot>
 
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                @if(session('success'))
-                    <div style="background:#d1fae5;padding:10px;margin-bottom:20px;">
-                        {{ session('success') }}
-                    </div>
-                @endif
+<div class="py-10">
 
-            <!-- Activities Container -->
-            <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:20px;">
+<div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
 
-                @foreach($activities as $activity)
+<!-- Activities Grid -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
 
-                <!-- Activity Card -->
-                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+@foreach($activities as $activity)
 
-                    <div class="p-6 text-gray-900 dark:text-gray-100">
+<!-- Card -->
+<div class="bg-white dark:bg-gray-800 shadow-lg rounded-xl overflow-hidden hover:scale-105 transition">
 
-                        <!-- Activity Image -->
-                        <div>
-                            @if($activity->image)
-                            <img src="{{ asset('storage/'.$activity->image) }}" alt="activity image" style="width:100%;">
-                            @endif
-                        </div>
+@if($activity->image)
+<img src="{{ asset('storage/'.$activity->image) }}"
+class="w-full h-48 object-cover">
+@endif
 
-                        <!-- Activity Info -->
-                        <div>
+<div class="p-5">
 
-                            <h3 style="font-size:20px; font-weight:bold;">
-                                {{ $activity->title }}
-                            </h3>
+<h3 class="text-lg font-bold text-gray-800 dark:text-gray-100 mb-2">
+{{ $activity->title }}
+</h3>
 
-                            <p>
-                                Date: {{ $activity->date }}
-                            </p>
+<p class="text-sm text-gray-600 dark:text-gray-300">
+📅 {{ $activity->date }}
+</p>
 
-                            <p>
-                                Location: {{ $activity->location }}
-                            </p>
+<p class="text-sm text-gray-600 dark:text-gray-300 mb-3">
+📍 {{ $activity->location }}
+</p>
 
-                            <a href="/activities/{{ $activity->id }}">
-                                View Details
-                            </a>
+<a href="/activities/{{ $activity->id }}"
+class="text-blue-600 font-semibold hover:underline">
 
-                        </div>
+View Details
 
-                    </div>
+</a>
 
-                </div>
+</div>
 
-                @endforeach
+</div>
 
-            </div>
+@endforeach
 
-        </div>
+</div>
 
-    </div>
+</div>
+
+</div>
+
 </x-app-layout>

@@ -31,6 +31,11 @@
             <main>
                 {{ $slot }}
             </main>
+            <!-- ✅ Footer -->
+            <footer class="bg-gray-800 text-white text-center p-4 mt-10">
+                © 2026 Activity Hub
+            </footer>
+
         </div>
     </body>
 </html>
