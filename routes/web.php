@@ -10,61 +10,62 @@ use Illuminate\Support\Facades\Route;
 | Home
 |--------------------------------------------------------------------------
 */
-
 Route::get('/', function () {
     return view('welcome');
 });
 
 /*
 |--------------------------------------------------------------------------
-| Dashboard (หน้า Home หลัก)
+| Dashboard
 |--------------------------------------------------------------------------
 */
-
 Route::get('/dashboard', [ActivityController::class, 'index'])
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
 
 /*
 |--------------------------------------------------------------------------
-| Activity + Registration
+| USER (ผู้ใช้ทั่วไป)
 |--------------------------------------------------------------------------
 */
+Route::middleware(['auth', 'role:user'])->group(function () {
 
-Route::middleware('auth')->group(function () {
-
-    // แสดงกิจกรรมทั้งหมด
     Route::get('/activities', [ActivityController::class, 'index'])->name('activities');
 
-    // ดูรายละเอียดกิจกรรม
     Route::get('/activities/{id}', [ActivityController::class, 'show'])->name('activities.show');
 
-    // สร้างกิจกรรม
-    Route::get('/create-activity', [ActivityController::class, 'create'])->name('activities.create');
-    Route::post('/create-activity', [ActivityController::class, 'store'])->name('activities.store');
-
-    // สมัครกิจกรรม (ใช้ตัวนี้ตัวเดียว)
     Route::post('/activities/{id}/register', [RegistrationController::class,'register'])->name('activities.register');
 
-    // หน้า My Activities
     Route::get('/my-activities', [RegistrationController::class,'myActivities'])->name('My-activities');
-    // My club
+});
+
+/*
+|--------------------------------------------------------------------------
+| STAFF (คนสร้างกิจกรรม)
+|--------------------------------------------------------------------------
+*/
+Route::middleware(['auth', 'role:staff'])->group(function () {
+
+    Route::get('/create-activity', [ActivityController::class, 'create'])->name('activities.create');
+
+    Route::post('/create-activity', [ActivityController::class, 'store'])->name('activities.store');
+
     Route::get('/my-created-activities', [ActivityController::class, 'myActivities']);
 });
 
 /*
 |--------------------------------------------------------------------------
-| Admin Management 
+| ADMIN
 |--------------------------------------------------------------------------
 */
+Route::middleware(['auth', 'role:admin'])->group(function () {
 
-Route::middleware('auth')->group(function () {
-    // จัดการการสมัคร (Registrations)
+    // Registrations
     Route::get('/admin/registrations', [RegistrationController::class, 'adminIndex']);
     Route::post('/admin/registrations/{id}/approve', [RegistrationController::class, 'approve']);
     Route::post('/admin/registrations/{id}/reject', [RegistrationController::class, 'reject']);
 
-    // จัดการกิจกรรม (Activities) 
+    // Activities
     Route::get('/admin/activities', [ActivityController::class, 'adminIndex']);
     Route::post('/admin/activities/{id}/approve', [ActivityController::class, 'approve']);
     Route::post('/admin/activities/{id}/reject', [ActivityController::class, 'reject']);
@@ -76,7 +77,6 @@ Route::middleware('auth')->group(function () {
 | Profile
 |--------------------------------------------------------------------------
 */
-
 Route::middleware('auth')->group(function () {
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -89,8 +89,7 @@ Route::middleware('auth')->group(function () {
 
 /*
 |--------------------------------------------------------------------------
-| Auth (Laravel Breeze)
+| Auth
 |--------------------------------------------------------------------------
 */
-
 require __DIR__.'/auth.php';

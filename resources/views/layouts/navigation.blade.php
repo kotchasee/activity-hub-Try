@@ -5,37 +5,38 @@
 
                 <!-- Navigation Links -->
                 <div class="hidden sm:flex items-center space-x-6 ml-10">
-                    <x-nav-link :href="route('dashboard')" class="text-white">
-                        Dashboard
-                    </x-nav-link>
 
-                    <x-nav-link :href="url('/my-activities')" class="text-white">
-                        My-activities
+                <!-- ทุกคน -->
+                <x-nav-link :href="route('dashboard')" class="text-white">
+                    Dashboard
+                </x-nav-link>
+
+                <!-- USER -->
+                @if(auth()->user()->role === 'user')
+                    <x-nav-link :href="route('My-activities')" class="text-white">
+                        My Activities
                     </x-nav-link>
 
                     <x-nav-link :href="url('/reviews')" class="text-white">
                         Reviews
                     </x-nav-link>
+                @endif
 
+                <!-- STAFF -->
+                @if(auth()->user()->role === 'staff')
                     <x-nav-link :href="url('/create-activity')" class="text-white">
-                        Create-activity
+                        Create Activity
                     </x-nav-link>
-                    <x-nav-link :href="route('My-activities')" :active="request()->routeIs('My-activities')">
-                        {{ __('My-activities') }}
-                    </x-nav-link>
-                        @if(auth()->user()->role === 'admin')
-                            <x-nav-link :href="url('/admin/activities')">
-                                Admin Panel
-                            </x-nav-link>
-                        @endif
-                        @if(auth()->user()->role === 'staff')
-                            <x-nav-link :href="url('/create-activity')">
-                                Create activity
-                            </x-nav-link>
-                        @endif
-                </div>
-            </div>
+                @endif
 
+                <!-- ADMIN -->
+                @if(auth()->user()->role === 'admin')
+                    <x-nav-link :href="url('/admin/activities')" class="text-white">
+                        Admin Panel
+                    </x-nav-link>
+                @endif
+
+            </div>
             <!-- Settings Dropdown -->
             <div class="hidden sm:flex sm:items-center sm:ms-6">
                 <x-dropdown align="right" width="48">
