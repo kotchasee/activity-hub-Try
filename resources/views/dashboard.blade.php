@@ -9,6 +9,44 @@
     <div class="py-10">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
 
+            <!-- 🔥 Top 3 Hot Activities -->
+            <div class="mb-10">
+                <h3 class="text-2xl font-bold mb-6 text-center">🔥 Top 3 Hot Activities</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    @foreach($hotActivities as $activity)
+                    <div class="bg-gradient-to-r from-red-500 to-orange-500 text-white rounded-lg p-6 shadow-lg">
+                        <h4 class="text-xl font-semibold mb-2">{{ $activity->title }}</h4>
+                        <p class="text-sm mb-2">{{ $activity->date }}</p>
+                        <p class="text-2xl font-bold">{{ $activity->view_count }} views</p>
+                    </div>
+                    @endforeach
+                </div>
+            </div>
+
+            <!-- Monthly Calendar -->
+            <div class="mb-10">
+                <h3 class="text-2xl font-bold mb-6 text-center">Monthly Calendar</h3>
+                <div class="space-y-4">
+                    @forelse($monthlyActivities as $activity)
+                    <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 border-l-4 border-blue-500">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <h4 class="text-lg font-semibold text-gray-900 dark:text-gray-100">{{ $activity->title }}</h4>
+                                <p class="text-sm text-gray-600 dark:text-gray-400">{{ $activity->description }}</p>
+                                <p class="text-sm text-gray-500 dark:text-gray-500">Location: {{ $activity->location }}</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-lg font-bold text-blue-600 dark:text-blue-400">{{ $activity->date }}</p>
+                                <p class="text-sm text-gray-500 dark:text-gray-500">{{ $activity->view_count }} views</p>
+                            </div>
+                        </div>
+                    </div>
+                    @empty
+                    <p class="text-center text-gray-500 dark:text-gray-400">No activities this month.</p>
+                    @endforelse
+                </div>
+            </div>
+
             <!--  Search Form -->
             <form method="GET" action="{{ route('dashboard') }}" class="mb-6 flex gap-2 flex-wrap">
 

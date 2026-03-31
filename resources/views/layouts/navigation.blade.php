@@ -15,11 +15,6 @@
                         My Activities
                     </x-nav-link>
 
-                    <x-nav-link :href="url('/reviews')" class="text-white">
-                        Reviews
-                    </x-nav-link>
-
-
                     <!-- STAFF -->
                     @if(auth()->user()->role === 'staff')
                         <x-nav-link :href="url('/create-activity')" class="text-white">
@@ -35,6 +30,10 @@
                     @if(auth()->user()->role === 'admin')
                         <x-nav-link :href="url('/admin/activities')" class="text-white">
                             Admin Panel
+                        </x-nav-link>
+
+                        <x-nav-link :href="route('admin.review')" class="text-white">
+                            Review
                         </x-nav-link>
                     @endif
 

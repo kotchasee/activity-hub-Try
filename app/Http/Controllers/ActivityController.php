@@ -33,7 +33,19 @@ class ActivityController extends Controller
 
         $tags = Tag::all(); // ส่ง tag ไป view 
 
-        return view('dashboard', compact('activities', 'tags'));
+        // Monthly Analytics
+        $monthlyActivities = Activity::where('status', 'approved')
+            ->whereMonth('date', now()->month)
+            ->whereYear('date', now()->year)
+            ->orderBy('date')
+            ->get();
+
+        $hotActivities = Activity::where('status', 'approved')
+            ->orderBy('view_count', 'desc')
+            ->limit(3)
+            ->get();
+
+        return view('dashboard', compact('activities', 'tags', 'monthlyActivities', 'hotActivities'));
     }
 
     public function create()
@@ -78,6 +90,9 @@ class ActivityController extends Controller
     public function show($id)
     {
         $activity = Activity::with('tags')->findOrFail($id);
+        
+        // Increment view count
+        $activity->increment('view_count');
 
         return view('activities.show', compact('activity'));
     }

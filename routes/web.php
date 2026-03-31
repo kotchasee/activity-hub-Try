@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ActivityController;
 use App\Http\Controllers\RegistrationController;
+use App\Http\Controllers\AdminReviewController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -80,6 +81,9 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::post('/admin/activities/{id}/approve', [ActivityController::class, 'approve']);
     Route::post('/admin/activities/{id}/reject', [ActivityController::class, 'reject']);
     Route::delete('/admin/activities/{id}', [ActivityController::class, 'destroy'])->name('activities.destroy');
+
+    // Review & Analytics
+    Route::get('/reviews', [AdminReviewController::class, 'index'])->name('admin.review');
 });
 
 /*
