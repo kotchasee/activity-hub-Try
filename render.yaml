@@ -1,0 +1,7 @@
+services:
+  - type: web
+    name: activity-hub
+    env: php
+    plan: free
+    buildCommand: "composer install && npm install && npm run build"
+    startCommand: "vendor/bin/heroku-php-apache2 public/"
