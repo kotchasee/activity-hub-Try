@@ -3,6 +3,7 @@
 @tailwind utilities;
 
 
+
 html, body {
     background-color: #ffffff !important; /* บังคับพื้นหลังขาว */
     color: #1f2937 !important; /* บังคับตัวหนังสือสีเข้ม */
