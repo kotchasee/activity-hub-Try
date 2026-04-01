@@ -1,7 +1,7 @@
 FROM php:8.2-cli
 
 RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
-    && apt-get install -y nodejs zip unzip git \
+    && apt-get install -y nodejs zip unzip git libpq-dev \
     && docker-php-ext-install pdo pdo_pgsql
 
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
