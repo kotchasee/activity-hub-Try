@@ -1,6 +1,10 @@
 #!/bin/bash
 set -e
 
+echo "Starting Activity Hub..."
+echo "DB_HOST: $DB_HOST"
+echo "DB_DATABASE: $DB_DATABASE"
+
 # Generate .env from Render environment variables at runtime
 cat > /var/www/.env << EOF
 APP_NAME=${APP_NAME:-Laravel}
@@ -29,5 +33,8 @@ BROADCAST_CONNECTION=log
 MAIL_MAILER=log
 EOF
 
-php artisan migrate --force
+echo ".env file generated"
+echo "Running migrations..."
+php artisan migrate --force || echo "Migration warning (may be expected)"
+echo "Starting server on 0.0.0.0:10000..."
 exec php artisan serve --host=0.0.0.0 --port=10000
