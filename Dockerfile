@@ -9,7 +9,7 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 WORKDIR /var/www
 COPY . .
 
-# Create .env from .env.example so Laravel can boot
+# Create temporary .env for build
 RUN cp .env.example .env
 
 RUN composer install --no-dev --optimize-autoloader
@@ -17,6 +17,7 @@ RUN npm install && npm run build
 RUN php artisan key:generate
 
 RUN chmod -R 775 /var/www/storage /var/www/bootstrap/cache
+RUN chmod +x /var/www/docker-entrypoint.sh
 
 EXPOSE 10000
-CMD php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=10000
+ENTRYPOINT ["/var/www/docker-entrypoint.sh"]
