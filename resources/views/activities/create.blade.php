@@ -7,7 +7,18 @@
 
         @if(session('success'))
             <div style="background: #d1fae5; color: #065f46; padding: 12px; border-radius: 8px; margin-bottom: 20px;">
-                {{ session('success') }}
+                ✅ {{ session('success') }}
+            </div>
+        @endif
+
+        @if($errors->any())
+            <div style="background: #fee2e2; color: #991b1b; padding: 12px; border-radius: 8px; margin-bottom: 20px;">
+                <strong>❌ สร้างกิจกรรมไม่สำเร็จ กรุณาตรวจสอบข้อมูล:</strong>
+                <ul style="margin-top: 8px; padding-left: 20px;">
+                    @foreach($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
             </div>
         @endif
 
@@ -42,7 +53,7 @@
                 </div>
                 <div>
                     <label style="display: block; font-weight: 600; margin-bottom: 5px;">จำนวนรับสมัครสูงสุด (คน)</label>
-                    <input type="number" name="max_participants" placeholder="ระบุจำนวนคน" style="width: 100%; border: 1px solid #d1d5db; border-radius: 8px; padding: 10px;">
+                    <input type="number" name="max_participants" value="{{ old('max_participants') }}" min="0" placeholder="0 = ไม่จำกัดจำนวน" style="width: 100%; border: 1px solid #d1d5db; border-radius: 8px; padding: 10px;">
                 </div>
             </div>
 

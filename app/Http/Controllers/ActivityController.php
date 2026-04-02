@@ -29,7 +29,7 @@ class ActivityController extends Controller
             $query->whereDate('date', $request->date);
         }
 
-        $activities = $query->latest()->get();
+        $activities = $query->latest()->paginate(12)->appends($request->query());
 
         $tags = Tag::all(); // ส่ง tag ไป view 
 
@@ -62,6 +62,16 @@ class ActivityController extends Controller
 
     public function store(Request $request)
     {
+        $request->validate([
+            'title'                 => 'required|string|max:255',
+            'description'           => 'required|string',
+            'date'                  => 'required|date',
+            'registration_deadline' => 'required|date',
+            'location'              => 'required|string|max:255',
+            'max_participants'      => 'required|integer|min:0',
+            'image'                 => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
+        ]);
+
         $imagePath = null;
 
         if ($request->hasFile('image')) {
@@ -74,7 +84,7 @@ class ActivityController extends Controller
             'date' => $request->date,
             'registration_deadline' => $request->registration_deadline,
             'location' => $request->location,
-            'max_participants' => $request->max_participants, // เพิ่มบรรทัดนี้เพื่อรับค่าจำนวนคน
+            'max_participants' => $request->max_participants, 
             'image' => $imagePath,
             'status' => 'pending',
             'user_id' => auth()->id()

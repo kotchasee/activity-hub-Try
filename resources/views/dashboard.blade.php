@@ -134,6 +134,11 @@
 
             </div>
 
+            <!-- Pagination -->
+            <div class="mt-8">
+                {{ $activities->links() }}
+            </div>
+
         </div>
     </div>
 
