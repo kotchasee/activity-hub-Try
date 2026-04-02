@@ -20,7 +20,8 @@
             @endif
 
             <div class="bg-white rounded-2xl shadow-md border border-orange-100 overflow-hidden">
-                <table class="w-full text-left">
+                <div class="overflow-x-auto">
+                <table class="w-full min-w-[760px] text-left">
                     <thead class="bg-orange-500 text-white">
                         <tr>
                             <th class="px-6 py-3">ID</th>
@@ -76,6 +77,7 @@
                         @endforeach
                     </tbody>
                 </table>
+                </div>
             </div>
 
         </div>

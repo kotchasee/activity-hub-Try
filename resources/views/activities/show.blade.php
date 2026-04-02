@@ -53,7 +53,7 @@
         <h1 style="font-size: 28px; font-weight: bold; color: #1f2937; margin-bottom: 15px;">
             {{ $activity->title }}
         </h1>
-        <img src="{{ asset('storage/'.$activity->image) }}" 
+        <img src="{{ str_starts_with($activity->image, 'http') ? $activity->image : asset('storage/'.$activity->image) }}" 
              style="width: 100%; max-width: 500px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
     </div>
 

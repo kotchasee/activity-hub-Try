@@ -16,28 +16,30 @@
 <body class="bg-gray-50 font-sans">
 
 <!-- NAVBAR -->
-<nav class="bg-orange-500 text-white px-6 py-4 flex justify-between items-center shadow-sm">
+<nav class="bg-orange-500 text-white px-4 sm:px-6 py-4 shadow-sm">
 
-    <div class="text-lg font-bold text-gray-800">
-        ActivityHub
-    </div>
+    <div class="max-w-6xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
+        <div class="text-lg font-bold text-gray-800">
+            ActivityHub
+        </div>
 
-    <div class="flex items-center gap-4 text-sm">
+        <div class="flex flex-wrap items-center justify-center gap-3 sm:gap-4 text-sm">
 
-        <a href="/" class="text-gray-600 hover:text-black">Home</a>
-        <a href="/activities" class="text-gray-600 hover:text-black">Events</a>
-        <a href="/dashboard" class="text-gray-600 hover:text-black">Dashboard</a>
+            <a href="/" class="text-gray-600 hover:text-black">Home</a>
+            <a href="/activities" class="text-gray-600 hover:text-black">Events</a>
+            <a href="/dashboard" class="text-gray-600 hover:text-black">Dashboard</a>
 
-        <a href="/login"
-        class="bg-orange-500 text-white px-4 py-2 rounded-lg shadow hover:bg-orange-400 transition">
-        Login
-        </a>
+            <a href="/login"
+            class="bg-orange-500 text-white px-4 py-2 rounded-lg shadow hover:bg-orange-400 transition">
+            Login
+            </a>
 
-        <a href="{{ route('register') }}"
-        class="border border-gray-300 px-4 py-2 rounded-lg hover:bg-gray-100 transition">
-        Register
-        </a>
+            <a href="{{ route('register') }}"
+            class="border border-gray-300 px-4 py-2 rounded-lg hover:bg-gray-100 transition">
+            Register
+            </a>
 
+        </div>
     </div>
 
 </nav>
@@ -55,15 +57,15 @@
         Discover and join exciting activities, workshops, and events easily in one place
     </p>
 
-    <div class="mt-6 flex justify-center gap-4">
+    <div class="mt-6 flex flex-col sm:flex-row justify-center gap-4">
 
         <a href="/activities"
-        class="bg-orange-500 text-white px-6 py-3 rounded-xl shadow hover:scale-105 transition">
+        class="bg-orange-500 text-white px-6 py-3 rounded-xl shadow hover:scale-105 transition text-center">
         Get Started Free →
         </a>
 
         <a href="/activities"
-        class="border border-gray-300 px-6 py-3 rounded-xl hover:bg-gray-100 transition">
+        class="border border-gray-300 px-6 py-3 rounded-xl hover:bg-gray-100 transition text-center">
         Browse Activities
         </a>
 

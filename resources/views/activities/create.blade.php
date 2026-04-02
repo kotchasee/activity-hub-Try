@@ -1,5 +1,5 @@
 <x-app-layout>
-    <div style="max-width: 600px; margin: 40px auto; padding: 30px; background: white; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); font-family: 'sans-serif';">
+    <div class="max-w-2xl mx-4 sm:mx-auto my-6 sm:my-10" style="padding: 20px; background: white; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); font-family: 'sans-serif';">
         
         <h1 style="font-size: 24px; font-weight: bold; color: #1f2937; margin-bottom: 20px; border-bottom: 2px solid #f3f4f6; padding-bottom: 10px;">
             สร้างกิจกรรมใหม่ (Create Activity)
@@ -22,6 +22,12 @@
             </div>
         @endif
 
+        @if(session('error'))
+            <div style="background: #fee2e2; color: #991b1b; padding: 12px; border-radius: 8px; margin-bottom: 20px;">
+                ❌ {{ session('error') }}
+            </div>
+        @endif
+
         <form action="/create-activity" method="POST" enctype="multipart/form-data">
             @csrf
 
@@ -35,7 +41,7 @@
                 <textarea name="description" rows="3" style="width: 100%; border: 1px solid #d1d5db; border-radius: 8px; padding: 10px;"></textarea>
             </div>
 
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                 <div>
                     <label style="display: block; font-weight: 600; margin-bottom: 5px;">วันที่จัดกิจกรรม</label>
                     <input type="date" name="date" required style="width: 100%; border: 1px solid #d1d5db; border-radius: 8px; padding: 10px;">
@@ -46,7 +52,7 @@
                 </div>
             </div>
 
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                 <div>
                     <label style="display: block; font-weight: 600; margin-bottom: 5px;">สถานที่ (Location)</label>
                     <input type="text" name="location" required style="width: 100%; border: 1px solid #d1d5db; border-radius: 8px; padding: 10px;">

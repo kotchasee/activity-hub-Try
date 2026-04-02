@@ -29,13 +29,13 @@
                 <div class="space-y-4">
                     @forelse($monthlyActivities as $activity)
                     <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 border-l-4 border-blue-500">
-                        <div class="flex justify-between items-center">
+                        <div class="flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-center">
                             <div>
                                 <h4 class="text-lg font-semibold text-gray-900 dark:text-gray-100">{{ $activity->title }}</h4>
                                 <p class="text-sm text-gray-600 dark:text-gray-400">{{ $activity->description }}</p>
                                 <p class="text-sm text-gray-500 dark:text-gray-500">Location: {{ $activity->location }}</p>
                             </div>
-                            <div class="text-right">
+                            <div class="text-left sm:text-right">
                                 <p class="text-lg font-bold text-blue-600 dark:text-blue-400">{{ $activity->date }}</p>
                                 <p class="text-sm text-gray-500 dark:text-gray-500">{{ $activity->view_count }} views</p>
                             </div>
@@ -89,7 +89,7 @@
                 <div class="bg-white dark:bg-gray-800 shadow-lg rounded-xl overflow-hidden hover:scale-105 transition">
 
                     @if($activity->image)
-                        <img src="{{ asset('storage/'.$activity->image) }}"
+                        <img src="{{ str_starts_with($activity->image, 'http') ? $activity->image : asset('storage/'.$activity->image) }}"
                             class="w-full h-48 object-cover">
                     @endif
 

@@ -3,8 +3,12 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Http\UploadedFile;
 use App\Models\Activity;
 use App\Models\Tag;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class ActivityController extends Controller
 {
@@ -72,29 +76,38 @@ class ActivityController extends Controller
             'image'                 => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
         ]);
 
-        $imagePath = null;
+        try {
+            $imagePath = null;
 
-        if ($request->hasFile('image')) {
-            $imagePath = $request->file('image')->store('activities', 'public');
+            if ($request->hasFile('image')) {
+                $imagePath = $this->uploadActivityImage($request->file('image'));
+            }
+
+            $activity = Activity::create([
+                'title' => $request->title,
+                'description' => $request->description,
+                'date' => $request->date,
+                'registration_deadline' => $request->registration_deadline,
+                'location' => $request->location,
+                'max_participants' => $request->max_participants,
+                'image' => $imagePath,
+                'status' => 'pending',
+                'user_id' => auth()->id()
+            ]);
+
+            if ($request->has('tags')) {
+                $activity->tags()->attach($request->tags);
+            }
+
+            return redirect('/dashboard')->with('success', 'สร้างกิจกรรมสำเร็จแล้ว');
+        } catch (\Throwable $e) {
+            Log::error('Create activity failed', [
+                'user_id' => auth()->id(),
+                'error' => $e->getMessage(),
+            ]);
+
+            return back()->withInput()->with('error', 'สร้างกิจกรรมไม่สำเร็จ กรุณาลองใหม่อีกครั้ง');
         }
-
-        $activity = Activity::create([
-            'title' => $request->title,
-            'description' => $request->description,
-            'date' => $request->date,
-            'registration_deadline' => $request->registration_deadline,
-            'location' => $request->location,
-            'max_participants' => $request->max_participants, 
-            'image' => $imagePath,
-            'status' => 'pending',
-            'user_id' => auth()->id()
-        ]);
-        // 2. บันทึก Tag ที่เลือก 
-        if ($request->has('tags')) {
-            $activity->tags()->attach($request->tags); // ใช้ $activity ที่เพิ่งสร้างด้านบน และสั่ง attach Tag เข้าไป
-    }
-
-        return redirect('/dashboard')->with('success', 'Activity created!');
     }
 
     public function show($id)
@@ -172,6 +185,7 @@ class ActivityController extends Controller
             return back()->with('error', 'ไม่พบกิจกรรม');
         }
 
+        $this->deleteActivityImage($activity->image);
         $activity->delete();
 
         return back()->with('success', 'ลบกิจกรรมเรียบร้อย');
@@ -196,6 +210,16 @@ class ActivityController extends Controller
     {
         $activity = Activity::findOrFail($id);
 
+        $request->validate([
+            'title'                 => 'required|string|max:255',
+            'description'           => 'required|string',
+            'date'                  => 'required|date',
+            'registration_deadline' => 'required|date',
+            'location'              => 'required|string|max:255',
+            'max_participants'      => 'required|integer|min:0',
+            'image'                 => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
+        ]);
+
         // ตรวจสอบว่าเป็นเจ้าของกิจกรรม
         if ($activity->user_id !== auth()->id()) {
             abort(403, 'คุณไม่มีสิทธิ์แก้ไขกิจกรรมนี้');
@@ -205,7 +229,7 @@ class ActivityController extends Controller
         $data = $request->only(['title', 'description', 'date', 'registration_deadline', 'location', 'max_participants']);
         
         if ($request->hasFile('image')) {
-            $data['image'] = $request->file('image')->store('activities', 'public');
+            $data['image'] = $this->uploadActivityImage($request->file('image'));
         }
 
         // เพิ่มข้อมูล Tags เข้าไปในก้อนข้อมูลที่จะพักไว้ด้วย
@@ -246,5 +270,93 @@ class ActivityController extends Controller
         $reg->save();
 
         return back()->with('success', 'ปฏิเสธผู้เข้าร่วมเรียบร้อย!');
+    }
+
+    private function uploadActivityImage(UploadedFile $file): string
+    {
+        $cloudName = config('services.cloudinary.cloud_name');
+        $apiKey = config('services.cloudinary.api_key');
+        $apiSecret = config('services.cloudinary.api_secret');
+
+        // If Cloudinary is not configured, keep legacy local behavior.
+        if (!$cloudName || !$apiKey || !$apiSecret) {
+            return $file->store('activities', 'public');
+        }
+
+        $timestamp = time();
+        $folder = 'activity-hub/activities';
+        $signature = sha1("folder={$folder}&timestamp={$timestamp}{$apiSecret}");
+
+        $response = Http::asMultipart()->post("https://api.cloudinary.com/v1_1/{$cloudName}/image/upload", [
+            [
+                'name' => 'file',
+                'contents' => fopen($file->getRealPath(), 'r'),
+                'filename' => $file->getClientOriginalName(),
+            ],
+            ['name' => 'api_key', 'contents' => $apiKey],
+            ['name' => 'timestamp', 'contents' => (string) $timestamp],
+            ['name' => 'folder', 'contents' => $folder],
+            ['name' => 'signature', 'contents' => $signature],
+        ]);
+
+        if (!$response->successful() || !$response->json('secure_url')) {
+            throw new \RuntimeException('Cloud upload failed: '.$response->body());
+        }
+
+        return $response->json('secure_url');
+    }
+
+    private function deleteActivityImage(?string $imagePath): void
+    {
+        if (!$imagePath) {
+            return;
+        }
+
+        if (str_starts_with($imagePath, 'http://') || str_starts_with($imagePath, 'https://')) {
+            $this->deleteCloudinaryImageByUrl($imagePath);
+            return;
+        }
+
+        if (Storage::disk('public')->exists($imagePath)) {
+            Storage::disk('public')->delete($imagePath);
+        }
+    }
+
+    private function deleteCloudinaryImageByUrl(string $imageUrl): void
+    {
+        $cloudName = config('services.cloudinary.cloud_name');
+        $apiKey = config('services.cloudinary.api_key');
+        $apiSecret = config('services.cloudinary.api_secret');
+
+        if (!$cloudName || !$apiKey || !$apiSecret) {
+            return;
+        }
+
+        $path = parse_url($imageUrl, PHP_URL_PATH);
+        if (!$path || !str_contains($path, '/upload/')) {
+            return;
+        }
+
+        $parts = explode('/upload/', $path, 2);
+        if (count($parts) !== 2) {
+            return;
+        }
+
+        $publicIdPath = preg_replace('#^v\d+/#', '', $parts[1]);
+        $publicId = preg_replace('/\.[^.]+$/', '', $publicIdPath ?? '');
+
+        if (!$publicId) {
+            return;
+        }
+
+        $timestamp = time();
+        $signature = sha1("public_id={$publicId}&timestamp={$timestamp}{$apiSecret}");
+
+        Http::asForm()->post("https://api.cloudinary.com/v1_1/{$cloudName}/image/destroy", [
+            'public_id' => $publicId,
+            'timestamp' => $timestamp,
+            'api_key' => $apiKey,
+            'signature' => $signature,
+        ]);
     }
 }

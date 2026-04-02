@@ -57,7 +57,7 @@
                     <!-- IMAGE -->
                     @if($act->image)
                         <div class="mt-3">
-                            <img src="{{ asset('storage/'.$act->image) }}"
+                            <img src="{{ str_starts_with($act->image, 'http') ? $act->image : asset('storage/'.$act->image) }}"
                                 class="w-full h-56 object-cover rounded-lg">
                         </div>
                     @endif
